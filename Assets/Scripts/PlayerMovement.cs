@@ -8,10 +8,12 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D myRigidBody;
     private Vector3 change;
     private Animator anim;
+    private PlayState currentState;
 
     // Start is called before the first frame update
     void Start()
     {
+        currentState = PlayState.FREE_ROAM;
         myRigidBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
     }
@@ -22,7 +24,23 @@ public class PlayerMovement : MonoBehaviour
         change = Vector3.zero;
         change.x = Input.GetAxisRaw("Horizontal");
         change.y = Input.GetAxisRaw("Vertical");
-        UpdateAnimationAndMove();
+
+        if (Input.GetButtonDown("Attack") && currentState != PlayState.ATTACK)
+        {
+            StartCoroutine(AttackCo());
+        }
+        else if (currentState == PlayState.FREE_ROAM)
+            UpdateAnimationAndMove();
+    }
+
+    private IEnumerator AttackCo()
+    {
+        anim.SetBool("isAttacking", true);
+        this.currentState = PlayState.ATTACK;
+        yield return null;
+        anim.SetBool("isAttacking", false);
+        yield return new WaitForSeconds(0.33f);
+        this.currentState = PlayState.FREE_ROAM;
     }
 
     void UpdateAnimationAndMove()
@@ -44,4 +62,11 @@ public class PlayerMovement : MonoBehaviour
     {
         myRigidBody.MovePosition(transform.position + change * speed * Time.deltaTime);
     }
+}
+
+public enum PlayState
+{
+    FREE_ROAM,
+    ATTACK,
+    INTERACT
 }
