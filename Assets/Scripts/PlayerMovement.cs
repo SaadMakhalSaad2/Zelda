@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
         currentState = PlayState.FREE_ROAM;
         myRigidBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        anim.SetFloat("moveX", 0);
+        anim.SetFloat("moveY", -1);
     }
 
     // Update is called once per frame
@@ -60,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
 
     void MoveCharachter()
     {
+        change.Normalize();
         myRigidBody.MovePosition(transform.position + change * speed * Time.deltaTime);
     }
 }
